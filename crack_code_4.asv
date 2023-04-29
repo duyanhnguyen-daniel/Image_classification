@@ -1,0 +1,125 @@
+% Load binary image
+% im = imread('binary_image.png');
+% im = im2bw(im); % Convert to binary
+
+im = [0 1 1 0 0 0 0 0;
+      0 1 1 0 0 0 0 0;
+      0 1 1 0 0 0 0 0;
+      0 1 1 0 0 0 0 0;
+      1 1 1 0 0 0 0 0;
+      1 1 1 0 0 0 0 0;
+      1 1 1 0 0 0 0 0;
+      1 1 1 0 0 0 0 0;
+     ];
+  
+im_rows = size(im, 1);
+im_cols = size(im, 2);
+
+% Define neighbor offsets for 4-connectivity
+offsets = [-1 0; 0 -1; 1 0; 0 1]; %basde on code 0 1 2 3
+
+% Find starting pixel P
+for rowP=1: im_rows
+   for colP=1: im_cols    
+        if im(rowP,colP) ==1
+            disp('break1'); 
+            break;
+        end
+    end
+   if im(rowP,colP) ==1
+            disp('break2'); 
+            break;
+   end
+
+end
+
+
+
+%Back ground padding: 
+
+% Define the desired padding
+pad_size = 1;
+
+% Create a new matrix with the desired padded size
+padded_img = zeros(im_rows + 2*pad_size, im_cols + 2*pad_size);
+
+% Copy the original image to the center of the padded image
+padded_img(pad_size+1:im_rows+pad_size, pad_size+1:im_cols+pad_size) = im;
+
+im = padded_img;
+im
+rowP= rowP+pad_size; %shift as padding
+colP= colP+pad_size; 
+
+rowP0=rowP;
+colP0=colP;
+% Initialize crack code
+crack_code = [];
+
+
+  % Find a background pixel Q neighboring P
+    for i = 1:size(offsets, 1)
+        rowQ = rowP + offsets(i, 1);
+        colQ = colP + offsets(i, 2);
+        if ~im(rowQ, colQ)
+            break;
+        end
+    end
+    rowP
+    colP
+
+    rowQ
+    colQ
+    im
+crack_code = i;
+    pause()
+    
+% Main loop
+while true
+  
+     % Find U and V pixels
+    switch crack_code
+        case 1 %  Code 0
+            rowU = rowP; colU = colP - 1;
+            rowV = rowP-1;     colV = colP - 1;
+        case 2 % Code 1
+            rowU = rowP+1;     colU = colP ;
+            rowV = rowP + 1; colV = colP - 1;
+        case 3 % Code 2
+            rowU = rowP ; colU = colP + 1;
+            rowV = rowP + 1; colV = colP+1;
+        case 4 % Code 3
+            rowU = rowP - 1; colU = colP;
+            rowV = rowP - 1; colV = colP + 1;
+    end
+
+    % Update crack code by checking value U&V 
+    if im(rowV, colV)
+            crack_code(end+1) = mod(crack_code(end)+1,4);   
+             rowP = rowV; colP=colV;
+    else
+        if im(rowU, colU)
+            crack_code(end+1) = crack_code(end);
+            rowP = rowU; colP=colU;
+            rowQ = rowV; colQ=colV;
+        else
+            crack_code(end+1) = mod(crack_code(end)-1,4); 
+            rowQ = rowU; colQ=colU;
+        end
+    end
+    
+    %Stop condition
+    if length(crack)
+    if (rowP==rowP0) && (colP==colP0) && (rowQ==rowQ0) && (colQ==colP0) &&  (crack_code(end)
+
+    end
+
+
+    % Move to next pixel
+   
+    disp(crack_code);
+    pause()
+end
+
+% Display results
+disp(crack_code);
